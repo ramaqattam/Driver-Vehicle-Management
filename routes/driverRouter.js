@@ -1,22 +1,38 @@
 import express from "express";
-import { getAllDriver,updateDriver, deleteDriver, createDriver,getDriversWithVehicles, getAvailableDrivers} from "../controllers/driverController.js";
+import {
+  getAllDriver,
+  updateDriver,
+  deleteDriver,
+  createDriver,
+  getDriversWithVehicles,
+  getAvailableDrivers,
+  getDriversWithExpiredLicense,
+  getDriversWithExpiredVehicleLicense,
+} from "../controllers/driverController.js";
 import { auth } from "../middlewares/auth.js";
 import { internal } from "../middlewares/internal.js";
+import { uploadDriverImages } from "../middlewares/upload.js";
 
 const router = express.Router();
 
-router.post('/create', createDriver);
+router.get("/", [auth, internal], getAllDriver);
 
-router.get('/', [auth, internal] ,getAllDriver); 
+router.get("/withVehicles", [auth, internal], getDriversWithVehicles);
 
-router.get('/', [auth, internal] ,createDriver);
+router.get("/available", [auth, internal], getAvailableDrivers);
 
-router.get('/withVehicles' , [auth, internal] , getDriversWithVehicles);
+router.get("/expired-license", [auth, internal], getDriversWithExpiredLicense);
 
-router.get('/available' , [auth, internal] , getAvailableDrivers);
+router.get(
+  "/expired-vehicle-license",
+  [auth, internal],
+  getDriversWithExpiredVehicleLicense
+);
 
-router.patch('/:id', [auth, internal] , updateDriver);
+router.post("/", [auth, internal, uploadDriverImages], createDriver);
 
-router.delete('/:id', [auth, internal] , deleteDriver);
+router.patch("/:id", [auth, internal, uploadDriverImages], updateDriver);
+
+router.delete("/:id", [auth, internal], deleteDriver);
 
 export default router;

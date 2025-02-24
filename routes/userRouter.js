@@ -1,20 +1,28 @@
 import express from "express";
-import { getAllUsers, signIn, signUp, updateUser, deleteUser} from "../controllers/userController.js";
+import {
+  getAllUsers,
+  signIn,
+  signUp,
+  updateUser,
+  deleteUser,
+  activateUser,
+} from "../controllers/userController.js";
 import { auth } from "../middlewares/auth.js";
-
+import {internal} from "../middlewares/internal.js";
+import { uploadProfileImage } from "../middlewares/upload.js";
 
 const router = express.Router();
 
-router.get('/', [auth] ,getAllUsers); 
+router.get("/", [auth], getAllUsers);
 
-router.post('/signup', signUp);
+router.post("/signup", uploadProfileImage, signUp);
 
-router.post('/signin', signIn);
+router.post("/signin", signIn);
 
-router.patch('/', [auth] , updateUser);
+router.patch("/:userId", [auth, uploadProfileImage], updateUser);
 
-router.delete('/', [auth] , deleteUser);
+router.patch("/activate/:userId", [auth, internal], activateUser);
 
-
+router.delete("/:userId", [auth], deleteUser);
 
 export default router;
